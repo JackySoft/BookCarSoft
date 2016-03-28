@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookCarSoft", "BookCarSoft\BookCarSoft.csproj", "{16B1B965-5532-44E2-9E2D-7F772E3852F0}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "终结者管理员版", "C:\Users\Administrator\Desktop\约车神器\海驾约车软件\终结者管理员版\终结者管理员版.vdproj", "{35F2BCAA-1D60-4B40-A26B-D9E72AEF7E12}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "海驾终结者", "C:\Users\Administrator\Desktop\约车神器\海驾约车软件\海驾终结者\海驾终结者\海驾终结者.vdproj", "{AAE91A74-C70C-495A-8814-093B7D015560}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16B1B965-5532-44E2-9E2D-7F772E3852F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B1B965-5532-44E2-9E2D-7F772E3852F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B1B965-5532-44E2-9E2D-7F772E3852F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B1B965-5532-44E2-9E2D-7F772E3852F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35F2BCAA-1D60-4B40-A26B-D9E72AEF7E12}.Debug|Any CPU.ActiveCfg = Debug
+		{35F2BCAA-1D60-4B40-A26B-D9E72AEF7E12}.Release|Any CPU.ActiveCfg = Release
+		{AAE91A74-C70C-495A-8814-093B7D015560}.Debug|Any CPU.ActiveCfg = Debug
+		{AAE91A74-C70C-495A-8814-093B7D015560}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
