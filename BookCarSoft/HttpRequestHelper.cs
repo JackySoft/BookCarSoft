@@ -11,6 +11,11 @@ namespace BookCarSoft
     {
 
         public static string url = "http://www.51purse.com/aboutCar!isExistUserName.action";
+        public static string accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+        public static string userAgent = "ios_xuechebu;V3.00";
+        public static string contentType = "";
+        public static string referer = "";
+        public static CookieContainer cookies = new CookieContainer();
 
         private static byte[] Keys = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 
@@ -82,11 +87,11 @@ namespace BookCarSoft
         //替换\r\n和空格
         public static string getXnsdName(string xnsd)
         {
-            if (xnsd.Equals("812"))
+            if (xnsd.Equals("711"))
             {
                 return "上午";
             }
-            else if (xnsd.Equals("15"))
+            else if (xnsd.Equals("1216"))
             {
                 return "下午";
             }
@@ -100,15 +105,15 @@ namespace BookCarSoft
         {
             if (name.Equals("上午"))
             {
-                return "812";
+                return "711";
             }
             else if (name.Equals("下午"))
             {
-                return "15";
+                return "1216";
             }
             else
             {
-                return "58";
+                return "1720";
             }
         }
         /** 
@@ -152,6 +157,112 @@ namespace BookCarSoft
             }
 
             return subAry;
+        }
+
+        //Post方式请求 
+        public static string HttpPost(string Url, string postDataStr)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+            request.Method = "POST";
+            request.Accept = accept;
+            request.KeepAlive = true;
+            request.UserAgent = userAgent;
+            request.ContentType = contentType;
+            request.AllowAutoRedirect = true;
+            request.Referer = referer;
+            request.CookieContainer = cookies;
+            Stream myRequestStream = request.GetRequestStream();
+            StreamWriter myStreamWriter = new StreamWriter(myRequestStream);
+            myStreamWriter.Write(postDataStr);
+            myStreamWriter.Close();
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            response.Cookies = cookies.GetCookies(response.ResponseUri);
+            foreach (Cookie ck in response.Cookies)
+            {
+                cookies.Add(ck);
+            }
+            Stream myResponseStream = response.GetResponseStream();
+            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
+            string retString = myStreamReader.ReadToEnd();
+            myStreamReader.Close();
+            myResponseStream.Close();
+
+            return retString;
+        }
+        //Post方式请求 ，发送JSON格式数据,查询科目三的时候，必须发送JSON数据
+        public static string HttpPostByJson(string Url, string postDataStr)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+            request.Method = "POST";
+            request.Accept = "*/*";
+            request.KeepAlive = true;
+            request.UserAgent = userAgent;
+            request.ContentType = contentType;
+            request.AllowAutoRedirect = true;
+            request.Referer = "";
+            request.ContentType = "application/json; charset=UTF-8";
+            request.CookieContainer = cookies;
+            Stream myRequestStream = request.GetRequestStream();
+            StreamWriter myStreamWriter = new StreamWriter(myRequestStream);
+            myStreamWriter.Write(postDataStr);
+            myStreamWriter.Close();
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            response.Cookies = cookies.GetCookies(response.ResponseUri);
+            foreach (Cookie ck in response.Cookies)
+            {
+                cookies.Add(ck);
+            }
+            Stream myResponseStream = response.GetResponseStream();
+            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
+            string retString = myStreamReader.ReadToEnd();
+            myStreamReader.Close();
+            myResponseStream.Close();
+
+            return retString;
+        }
+        //Get方式请求
+        public static string HttpGet(string Url, string postDataStr, bool isReadHtml)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url + (postDataStr == "" ? "" : "?") + postDataStr);
+            request.CookieContainer = cookies;
+            request.Method = "GET";
+            request.Accept = accept;
+            request.KeepAlive = true;
+            request.UserAgent = userAgent;
+            request.ContentType = contentType;
+            request.AllowAutoRedirect = true;
+            request.Referer = referer;
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            foreach (Cookie ck in response.Cookies)
+            {
+                if (ck != null) 
+                {
+                    if (ck.Name.Equals("Webapi_LoginOn")) 
+                    {
+                        ck.Name = "JX_LoginOn";
+                        cookies.Add(ck);
+                    }else
+                    {
+                        cookies.Add(ck);
+                    }
+                }
+            }
+            string htmlString = "";
+            if (isReadHtml)
+            {
+                Stream myResponseStream = response.GetResponseStream();
+                StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
+                htmlString = myStreamReader.ReadToEnd();
+                myStreamReader.Close();
+                myResponseStream.Close();
+            }
+            response.Close();
+            request.Abort();
+            return htmlString;
         }
 
     }

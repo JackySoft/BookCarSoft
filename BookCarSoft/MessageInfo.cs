@@ -12,10 +12,10 @@ namespace BookCarSoft
         [DataMember]
         public CarInfo data { get; set; }
         [DataMember]
-        public string code { get; set; }
+        public int code { get; set; }
         [DataMember]
         public string message { get; set; }
-        public MessageInfo(CarInfo data, string code, string message)
+        public MessageInfo(CarInfo data, int code, string message)
         {
             this.data = data;
             this.code = code;

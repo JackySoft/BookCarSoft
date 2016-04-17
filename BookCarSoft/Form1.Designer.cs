@@ -94,6 +94,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.timerGrab = new System.Windows.Forms.Timer(this.components);
             this.startThread = new System.Windows.Forms.Timer(this.components);
+            this.lblServerTime = new System.Windows.Forms.Label();
+            this.timerServer = new System.Windows.Forms.Timer(this.components);
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -106,11 +108,11 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(286, 9);
+            this.label1.Location = new System.Drawing.Point(241, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(230, 31);
+            this.label1.Size = new System.Drawing.Size(284, 31);
             this.label1.TabIndex = 0;
-            this.label1.Text = "海驾自动约车软件";
+            this.label1.Text = "海驾自动约车检漏软件";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnAboutCar
@@ -177,7 +179,7 @@
             this.lbl_3_8.Name = "lbl_3_8";
             this.lbl_3_8.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_8.TabIndex = 34;
-            this.lbl_3_8.Tag = "58";
+            this.lbl_3_8.Tag = "1720";
             this.lbl_3_8.Text = "未预约";
             this.lbl_3_8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_8.Click += new System.EventHandler(this.setAboutCarDate);
@@ -191,7 +193,7 @@
             this.lbl_2_8.Name = "lbl_2_8";
             this.lbl_2_8.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_8.TabIndex = 33;
-            this.lbl_2_8.Tag = "15";
+            this.lbl_2_8.Tag = "1216";
             this.lbl_2_8.Text = "未预约";
             this.lbl_2_8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_8.Click += new System.EventHandler(this.setAboutCarDate);
@@ -205,7 +207,7 @@
             this.lbl_1_8.Name = "lbl_1_8";
             this.lbl_1_8.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_8.TabIndex = 32;
-            this.lbl_1_8.Tag = "812";
+            this.lbl_1_8.Tag = "711";
             this.lbl_1_8.Text = "未预约";
             this.lbl_1_8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_8.Click += new System.EventHandler(this.setAboutCarDate);
@@ -230,7 +232,7 @@
             this.lbl_3_7.Name = "lbl_3_7";
             this.lbl_3_7.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_7.TabIndex = 30;
-            this.lbl_3_7.Tag = "58";
+            this.lbl_3_7.Tag = "1720";
             this.lbl_3_7.Text = "未预约";
             this.lbl_3_7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_7.Click += new System.EventHandler(this.setAboutCarDate);
@@ -244,7 +246,7 @@
             this.lbl_3_6.Name = "lbl_3_6";
             this.lbl_3_6.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_6.TabIndex = 29;
-            this.lbl_3_6.Tag = "58";
+            this.lbl_3_6.Tag = "1720";
             this.lbl_3_6.Text = "未预约";
             this.lbl_3_6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_6.Click += new System.EventHandler(this.setAboutCarDate);
@@ -258,7 +260,7 @@
             this.lbl_3_5.Name = "lbl_3_5";
             this.lbl_3_5.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_5.TabIndex = 28;
-            this.lbl_3_5.Tag = "58";
+            this.lbl_3_5.Tag = "1720";
             this.lbl_3_5.Text = "未预约";
             this.lbl_3_5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_5.Click += new System.EventHandler(this.setAboutCarDate);
@@ -272,7 +274,7 @@
             this.lbl_3_4.Name = "lbl_3_4";
             this.lbl_3_4.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_4.TabIndex = 27;
-            this.lbl_3_4.Tag = "58";
+            this.lbl_3_4.Tag = "1720";
             this.lbl_3_4.Text = "未预约";
             this.lbl_3_4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_4.Click += new System.EventHandler(this.setAboutCarDate);
@@ -286,7 +288,7 @@
             this.lbl_3_3.Name = "lbl_3_3";
             this.lbl_3_3.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_3.TabIndex = 26;
-            this.lbl_3_3.Tag = "58";
+            this.lbl_3_3.Tag = "1720";
             this.lbl_3_3.Text = "未预约";
             this.lbl_3_3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_3.Click += new System.EventHandler(this.setAboutCarDate);
@@ -300,7 +302,7 @@
             this.lbl_3_2.Name = "lbl_3_2";
             this.lbl_3_2.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_2.TabIndex = 25;
-            this.lbl_3_2.Tag = "58";
+            this.lbl_3_2.Tag = "1720";
             this.lbl_3_2.Text = "未预约";
             this.lbl_3_2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_2.Click += new System.EventHandler(this.setAboutCarDate);
@@ -314,7 +316,7 @@
             this.lbl_3_1.Name = "lbl_3_1";
             this.lbl_3_1.Size = new System.Drawing.Size(100, 34);
             this.lbl_3_1.TabIndex = 24;
-            this.lbl_3_1.Tag = "58";
+            this.lbl_3_1.Tag = "1720";
             this.lbl_3_1.Text = "未预约";
             this.lbl_3_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_3_1.Click += new System.EventHandler(this.setAboutCarDate);
@@ -328,7 +330,7 @@
             this.lbl_2_7.Name = "lbl_2_7";
             this.lbl_2_7.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_7.TabIndex = 23;
-            this.lbl_2_7.Tag = "15";
+            this.lbl_2_7.Tag = "1216";
             this.lbl_2_7.Text = "未预约";
             this.lbl_2_7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_7.Click += new System.EventHandler(this.setAboutCarDate);
@@ -342,7 +344,7 @@
             this.lbl_2_6.Name = "lbl_2_6";
             this.lbl_2_6.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_6.TabIndex = 22;
-            this.lbl_2_6.Tag = "15";
+            this.lbl_2_6.Tag = "1216";
             this.lbl_2_6.Text = "未预约";
             this.lbl_2_6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_6.Click += new System.EventHandler(this.setAboutCarDate);
@@ -356,7 +358,7 @@
             this.lbl_2_5.Name = "lbl_2_5";
             this.lbl_2_5.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_5.TabIndex = 21;
-            this.lbl_2_5.Tag = "15";
+            this.lbl_2_5.Tag = "1216";
             this.lbl_2_5.Text = "未预约";
             this.lbl_2_5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_5.Click += new System.EventHandler(this.setAboutCarDate);
@@ -370,7 +372,7 @@
             this.lbl_2_4.Name = "lbl_2_4";
             this.lbl_2_4.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_4.TabIndex = 20;
-            this.lbl_2_4.Tag = "15";
+            this.lbl_2_4.Tag = "1216";
             this.lbl_2_4.Text = "未预约";
             this.lbl_2_4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_4.Click += new System.EventHandler(this.setAboutCarDate);
@@ -384,7 +386,7 @@
             this.lbl_2_3.Name = "lbl_2_3";
             this.lbl_2_3.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_3.TabIndex = 19;
-            this.lbl_2_3.Tag = "15";
+            this.lbl_2_3.Tag = "1216";
             this.lbl_2_3.Text = "未预约";
             this.lbl_2_3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_3.Click += new System.EventHandler(this.setAboutCarDate);
@@ -398,7 +400,7 @@
             this.lbl_2_2.Name = "lbl_2_2";
             this.lbl_2_2.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_2.TabIndex = 18;
-            this.lbl_2_2.Tag = "15";
+            this.lbl_2_2.Tag = "1216";
             this.lbl_2_2.Text = "未预约";
             this.lbl_2_2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_2.Click += new System.EventHandler(this.setAboutCarDate);
@@ -412,7 +414,7 @@
             this.lbl_2_1.Name = "lbl_2_1";
             this.lbl_2_1.Size = new System.Drawing.Size(100, 34);
             this.lbl_2_1.TabIndex = 17;
-            this.lbl_2_1.Tag = "15";
+            this.lbl_2_1.Tag = "1216";
             this.lbl_2_1.Text = "未预约";
             this.lbl_2_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_2_1.Click += new System.EventHandler(this.setAboutCarDate);
@@ -426,7 +428,7 @@
             this.lbl_1_7.Name = "lbl_1_7";
             this.lbl_1_7.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_7.TabIndex = 16;
-            this.lbl_1_7.Tag = "812";
+            this.lbl_1_7.Tag = "711";
             this.lbl_1_7.Text = "未预约";
             this.lbl_1_7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_7.Click += new System.EventHandler(this.setAboutCarDate);
@@ -440,7 +442,7 @@
             this.lbl_1_6.Name = "lbl_1_6";
             this.lbl_1_6.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_6.TabIndex = 15;
-            this.lbl_1_6.Tag = "812";
+            this.lbl_1_6.Tag = "711";
             this.lbl_1_6.Text = "未预约";
             this.lbl_1_6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_6.Click += new System.EventHandler(this.setAboutCarDate);
@@ -454,7 +456,7 @@
             this.lbl_1_5.Name = "lbl_1_5";
             this.lbl_1_5.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_5.TabIndex = 14;
-            this.lbl_1_5.Tag = "812";
+            this.lbl_1_5.Tag = "711";
             this.lbl_1_5.Text = "未预约";
             this.lbl_1_5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_5.Click += new System.EventHandler(this.setAboutCarDate);
@@ -468,7 +470,7 @@
             this.lbl_1_4.Name = "lbl_1_4";
             this.lbl_1_4.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_4.TabIndex = 13;
-            this.lbl_1_4.Tag = "812";
+            this.lbl_1_4.Tag = "711";
             this.lbl_1_4.Text = "未预约";
             this.lbl_1_4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_4.Click += new System.EventHandler(this.setAboutCarDate);
@@ -482,7 +484,7 @@
             this.lbl_1_3.Name = "lbl_1_3";
             this.lbl_1_3.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_3.TabIndex = 12;
-            this.lbl_1_3.Tag = "812";
+            this.lbl_1_3.Tag = "711";
             this.lbl_1_3.Text = "未预约";
             this.lbl_1_3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_3.Click += new System.EventHandler(this.setAboutCarDate);
@@ -496,7 +498,7 @@
             this.lbl_1_2.Name = "lbl_1_2";
             this.lbl_1_2.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_2.TabIndex = 11;
-            this.lbl_1_2.Tag = "812";
+            this.lbl_1_2.Tag = "711";
             this.lbl_1_2.Text = "未预约";
             this.lbl_1_2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_2.Click += new System.EventHandler(this.setAboutCarDate);
@@ -510,7 +512,7 @@
             this.lbl_1_1.Name = "lbl_1_1";
             this.lbl_1_1.Size = new System.Drawing.Size(100, 34);
             this.lbl_1_1.TabIndex = 10;
-            this.lbl_1_1.Tag = "812";
+            this.lbl_1_1.Tag = "711";
             this.lbl_1_1.Text = "未预约";
             this.lbl_1_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_1_1.Click += new System.EventHandler(this.setAboutCarDate);
@@ -650,10 +652,8 @@
             // 
             // txtUserPwd
             // 
-            this.txtUserPwd.Enabled = false;
             this.txtUserPwd.Location = new System.Drawing.Point(79, 59);
             this.txtUserPwd.Name = "txtUserPwd";
-            this.txtUserPwd.PasswordChar = '*';
             this.txtUserPwd.Size = new System.Drawing.Size(140, 21);
             this.txtUserPwd.TabIndex = 10;
             // 
@@ -703,11 +703,11 @@
             // 
             this.lblCurrentDate.AutoSize = true;
             this.lblCurrentDate.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblCurrentDate.Location = new System.Drawing.Point(595, 24);
+            this.lblCurrentDate.Location = new System.Drawing.Point(558, 24);
             this.lblCurrentDate.Name = "lblCurrentDate";
-            this.lblCurrentDate.Size = new System.Drawing.Size(76, 16);
+            this.lblCurrentDate.Size = new System.Drawing.Size(144, 16);
             this.lblCurrentDate.TabIndex = 21;
-            this.lblCurrentDate.Text = "当前时间";
+            this.lblCurrentDate.Text = "服务器当前时间：";
             // 
             // notifyIcon1
             // 
@@ -880,11 +880,27 @@
             this.startThread.Interval = 1000;
             this.startThread.Tick += new System.EventHandler(this.startThread_Tick);
             // 
+            // lblServerTime
+            // 
+            this.lblServerTime.AutoSize = true;
+            this.lblServerTime.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblServerTime.Location = new System.Drawing.Point(708, 24);
+            this.lblServerTime.Name = "lblServerTime";
+            this.lblServerTime.Size = new System.Drawing.Size(26, 16);
+            this.lblServerTime.TabIndex = 23;
+            this.lblServerTime.Text = "--";
+            // 
+            // timerServer
+            // 
+            this.timerServer.Interval = 1000;
+            this.timerServer.Tick += new System.EventHandler(this.timerServer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 495);
+            this.Controls.Add(this.lblServerTime);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.lblCurrentDate);
             this.Controls.Add(this.groupBox4);
@@ -981,6 +997,8 @@
         private System.Windows.Forms.CheckBox chkCheckAll;
         private System.Windows.Forms.Timer timerGrab;
         private System.Windows.Forms.Timer startThread;
+        private System.Windows.Forms.Label lblServerTime;
+        private System.Windows.Forms.Timer timerServer;
     }
 }
 

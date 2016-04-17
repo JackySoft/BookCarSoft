@@ -14,6 +14,7 @@ using System.Runtime.Serialization.Json;
 using System.Web;
 using System.Threading;
 using System.Globalization;
+using System.Management;
 
 namespace BookCarSoft
 {
@@ -41,13 +42,18 @@ namespace BookCarSoft
         public List<Label> list_2 = null;
         public List<Label> list_3 = null;
         public bool loginSuccFlag = false;
-        
+        public DateTime serverTime;
+        public string aaaaa = "QzDmLcq7KgPO9VhTLukNWlLGtsIpd9PH2TPQjJnh4Pp4FuDbHME5u9fUK3CS3ZO9b93KvUCXk-add-dxuTpxi1ostYaPkUZ41yzcJcde1xpPepyhvn5DhiFcFnwwQU5-add-QFDFpFnvVCjvypzQ9WFQzCnluEFxw2VZl7H4ejkiEg2fPl8=";
+        //07:45--11:30	12:45--16:30	17:00--20:00
         private void btnAboutCar_Click(object sender, EventArgs e)
         {
+            ///user/stulogin?username=51511293&password=1028&code=110108015&
+            ///aaaaa=PKRtdNFIpILRzoAtb-add-2RLl1sAuMZ2O8IRzsFNSUjObzNNC14Vl/nsrWxpfFDQ6Ip75S82HdyQGZ6FPDja6unl3Xtm1w/A1AwIQonH6AZ9-add-NUlNXGke9wAwbz84F7h-add-2lZnWzyUaCLBgpFBvGfRnQXeWh6fEfD0mB-add-mPsywp7VZA=
+            ///&os=ios&version=2.5
             if (this.btnAboutCar.Text.Equals("登陆"))
             {
                 string txtUserName = this.txtUserName.Text.ToString();
-                //string txtPassword = this.txtUserPwd.Text.ToString();
+                string txtPassword = this.txtUserPwd.Text.ToString();
                 if (txtUserName.Equals("") || txtUserPwd.Equals(""))
                 {
                     MessageBox.Show("请输入用户名或者密码！");
@@ -59,14 +65,27 @@ namespace BookCarSoft
                     MessageBox.Show("当前账号未开通权限，请联系管理员进行权限开通才能使用！");
                     return;
                 }
-                this.xxzh = txtUserName;
-                this.txtUserPwd.Text = "0101";
-                printLog("登陆成功.", Color.Green);
-                //获取当前可预约车辆所对应的日期列表
-                this.getAllCarsCount(true);
-                loginSuccFlag = true;
-                this.saveUserInfo(txtUserName, "");
-                this.btnAboutCar.Text = "退出登陆";
+                string url = "http://api.xuechebu.com/user/stulogin";
+                string param = "username=" + txtUserName + "&password=" + txtPassword + "&code=110108015&aaaaa=" + aaaaa + "&os=ios&version=2.5";
+                string html = HttpRequestHelper.HttpGet(url, param, true);
+                html = HttpRequestHelper.replaceComma(html);
+                MessageInfo codeInfo = FromJsonTo<MessageInfo>(html);
+                if (codeInfo.code > 0)
+                {
+                    printLog(codeInfo.message, Color.Red);
+                }
+                else 
+                {
+                    //codeInfo.data.xxzh
+                    this.xxzh = txtUserName;
+                    printLog("登陆成功.", Color.Green);
+                    //获取当前可预约车辆所对应的日期列表
+                    this.getAllCarsCount(true);
+                    loginSuccFlag = true;
+                    
+                    this.saveUserInfo(txtUserName, txtPassword);
+                    this.btnAboutCar.Text = "退出登陆";
+                }
             }
             else 
             {
@@ -106,9 +125,7 @@ namespace BookCarSoft
         {
             try
             {
-                string today = DateTime.Today.ToLongDateString();
                 DateTime datetime = System.DateTime.Now;
-                this.lblCurrentDate.Text = "今天是" + today;
                 //第一列，初始化当前可预约的时间表
                 List<Label> lblList = new List<Label>() { lbl_0, lbl_1, lbl_2, lbl_3, lbl_4, lbl_5, lbl_6, lbl_7 };
                 //需要动态添加当前的日期到Tag中，便于后续操作
@@ -138,11 +155,29 @@ namespace BookCarSoft
                     list_3[i].Tag = currentDate + "." + list_3[i].Tag;
                     d1 = d1.AddDays(1);
                 }
+                HttpRequestHelper.HttpGet("http://haijia.xuechebu.com:8008/","",false);
                 //默认选中时段中的第一个值
                 this.cboGrabSD.SelectedIndex = 0;
+                //约车设置默认日期
+                DateTime dt = DateTime.Now;
+                dt = dt.AddDays(7);
+                this.dtGrabDate.Value = dt;
 
+                //获取服务器时间
+                string dateHtml = HttpRequestHelper.HttpGet("http://haijia.xuechebu.com:8008/API/GetServiceDate", "", true);
+
+                dateHtml = HttpRequestHelper.replaceComma(dateHtml);
+                MessageCode timeInfo = FromJsonTo<MessageCode>(dateHtml);
+                if (timeInfo.code == 0)
+                {
+                    serverTime = StampToDateTime(timeInfo.data);
+                    lblServerTime.Text = serverTime.ToLongTimeString().ToString();
+                    this.timerServer.Enabled = true;
+                }
+
+                SetNetworkAdapter();
                 Control.CheckForIllegalCrossThreadCalls = false;
-                FileStream aFile = new FileStream("C:\\HaiDianJianXiao.txt", FileMode.OpenOrCreate);
+                FileStream aFile = new FileStream("C:\\xuechebu.txt", FileMode.OpenOrCreate);
                 StreamReader sr = new StreamReader(aFile);
                 if (sr != null)
                 {
@@ -154,8 +189,8 @@ namespace BookCarSoft
                     else
                     {
                         this.txtUserName.Text = username;
-                        //string pwd = sr.ReadLine();
-                        //this.txtUserPwd.Text = pwd;
+                        string pwd = sr.ReadLine();
+                        this.txtUserPwd.Text = pwd;
                     }
                 }
             }
@@ -317,25 +352,11 @@ namespace BookCarSoft
         //获取本周可预约的车辆数目
         public void getAllCarsCount(bool isShowLog)
         {
-            string url = "http://haijiaapi.bjxueche.net:8008/KM2/ClYyTimeSectionUIQuery2?xxzh=" + xxzh + "&os=ios&version=2.5";
-            HttpWebRequest request = null;
-            HttpWebResponse response = null;
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Credentials = CredentialCache.DefaultCredentials;
-            request.Method = "GET";
-            //request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-            request.UserAgent = "海淀驾校 2.0 rv:150630 (iPhone; iPhone OS 8.3; zh_CN)";
-            request.ContentType = "text/html; charset=utf-8";
-            request.KeepAlive = true;
-
+            string url = "http://haijia.xuechebu.com:8008/KM2/ClYyTimeSectionUIQuery2?xxzh=" + xxzh + "&aaaaa=" + aaaaa + "&os=ios&version=2.5";
+            
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-                string html = string.Empty;
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    html = reader.ReadToEnd();
-                }
+                string html = HttpRequestHelper.HttpGet(url,"",true);
                 MessageInfo info = null;
                 try
                 {
@@ -385,63 +406,63 @@ namespace BookCarSoft
                                 if (dateList.Count > 0)
                                 {
                                     //当天有一个时段约车成功，都需要将该天的所有时段都取消，防止下次重复提交。
-                                    if (dateList.Contains(item + ".812") && sd.Equals("812"))
+                                    if (dateList.Contains(item + ".711") && sd.Equals("711"))
                                     {
                                         //如果该日期和时段下约车成功了，需要将该项移除，防止下次重复预约
-                                        dateList.Remove(item + ".812");
+                                        dateList.Remove(item + ".711");
                                         list_1[lineNum].Text = "已预约";
                                         list_1[lineNum].BackColor = System.Drawing.Color.Green;
-                                        if (dateList.Contains(item + ".15")) 
+                                        if (dateList.Contains(item + ".1216")) 
                                         {
-                                            dateList.Remove(item + ".15");
+                                            dateList.Remove(item + ".1216");
                                             list_2[lineNum].Text = "未预约";
                                             list_2[lineNum].BackColor = System.Drawing.Color.PaleGreen;
                                         }
-                                        if (dateList.Contains(item + ".58"))
+                                        if (dateList.Contains(item + ".1720"))
                                         {
-                                            dateList.Remove(item + ".58");
+                                            dateList.Remove(item + ".1720");
                                             list_3[lineNum].Text = "未预约";
                                             list_3[lineNum].BackColor = System.Drawing.Color.PaleGreen;
                                         }
                                         
                                     }
 
-                                    if (dateList.Contains(item + ".15") && sd.Equals("15"))
+                                    if (dateList.Contains(item + ".1216") && sd.Equals("1216"))
                                     {
                                         //如果该日期和时段下约车成功了，需要将该项移除，防止下次重复预约
-                                        dateList.Remove(item + ".15");
+                                        dateList.Remove(item + ".1216");
                                         list_2[lineNum].Text = "已预约";
                                         list_2[lineNum].BackColor = System.Drawing.Color.Green;
-                                        if (dateList.Contains(item + ".812"))
+                                        if (dateList.Contains(item + ".711"))
                                         {
-                                            dateList.Remove(item + ".812");
+                                            dateList.Remove(item + ".711");
                                             list_1[lineNum].Text = "未预约";
                                             list_1[lineNum].BackColor = System.Drawing.Color.PaleGreen;
                                         }
-                                        if (dateList.Contains(item + ".58"))
+                                        if (dateList.Contains(item + ".1720"))
                                         {
-                                            dateList.Remove(item + ".58");
+                                            dateList.Remove(item + ".1720");
                                             list_3[lineNum].Text = "未预约";
                                             list_3[lineNum].BackColor = System.Drawing.Color.PaleGreen;
                                         }
 
                                     }
 
-                                    if (dateList.Contains(item + ".58") && sd.Equals("58"))
+                                    if (dateList.Contains(item + ".1720") && sd.Equals("1720"))
                                     {
                                         //如果该日期和时段下约车成功了，需要将该项移除，防止下次重复预约
-                                        dateList.Remove(item + ".58");
+                                        dateList.Remove(item + ".1720");
                                         list_3[lineNum].Text = "已预约";
                                         list_3[lineNum].BackColor = System.Drawing.Color.Green;
-                                        if (dateList.Contains(item + ".812"))
+                                        if (dateList.Contains(item + ".711"))
                                         {
-                                            dateList.Remove(item + ".812");
+                                            dateList.Remove(item + ".711");
                                             list_1[lineNum].Text = "未预约";
                                             list_1[lineNum].BackColor = System.Drawing.Color.PaleGreen;
                                         }
-                                        if (dateList.Contains(item + ".15"))
+                                        if (dateList.Contains(item + ".1216"))
                                         {
-                                            dateList.Remove(item + ".15");
+                                            dateList.Remove(item + ".1216");
                                             list_2[lineNum].Text = "未预约";
                                             list_2[lineNum].BackColor = System.Drawing.Color.PaleGreen;
                                         }
@@ -449,17 +470,17 @@ namespace BookCarSoft
                                 }
                                 else 
                                 {
-                                    if (sd.Equals("812"))
+                                    if (sd.Equals("711"))
                                     {
                                         list_1[lineNum].Text = "已预约";
                                         list_1[lineNum].BackColor = System.Drawing.Color.Green;
                                     }
-                                    else if (sd.Equals("15"))
+                                    else if (sd.Equals("1216"))
                                     {
                                         list_2[lineNum].Text = "已预约";
                                         list_2[lineNum].BackColor = System.Drawing.Color.Green;
                                     }
-                                    else if (sd.Equals("58"))
+                                    else if (sd.Equals("1720"))
                                     {
                                         list_3[lineNum].Text = "已预约";
                                         list_3[lineNum].BackColor = System.Drawing.Color.Green;
@@ -474,7 +495,7 @@ namespace BookCarSoft
                                 string sd = list[i].Xnsd;
                                 
 
-                                if (sd.Equals("812"))
+                                if (sd.Equals("711"))
                                 {
                                     Label lbl = list_1[realDay - sysDay];
                                     if(lbl.Text.Equals("已预约"))
@@ -483,7 +504,7 @@ namespace BookCarSoft
                                         lbl.BackColor = System.Drawing.Color.PaleGreen;
                                     }
                                 }
-                                else if (sd.Equals("15"))
+                                else if (sd.Equals("1216"))
                                 {
                                     Label lbl = list_2[realDay - sysDay];
                                     if (lbl.Text.Equals("已预约"))
@@ -492,7 +513,7 @@ namespace BookCarSoft
                                         lbl.BackColor = System.Drawing.Color.PaleGreen;
                                     }
                                 }
-                                else if (sd.Equals("58"))
+                                else if (sd.Equals("1720"))
                                 {
                                     Label lbl = list_3[realDay - sysDay];
                                     if (lbl.Text.Equals("已预约"))
@@ -522,125 +543,87 @@ namespace BookCarSoft
         //获取指定日期下可预约的车辆数目
         public void getAvaliableCars(string yyrq, string xnsd)
         {
-            string url = "http://haijiaapi.bjxueche.net:8008/KM2/ClYyCars2?filters[xnsd]=" + xnsd + "&filters[xxzh]=" + xxzh + "&filters[yyrq]=" + yyrq + "&xxzh=" + xxzh + "&os=ios&version=2.5&pageno=1&pagesize=1000";
-            HttpWebRequest request = null;
-            HttpWebResponse response = null;
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Credentials = CredentialCache.DefaultCredentials;
-            request.Method = "GET";
-            //request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-            request.UserAgent = "海淀驾校 2.0 rv:150630 (iPhone; iPhone OS 8.3; zh_CN)";
-            request.ContentType = "text/html; charset=utf-8";
-            request.KeepAlive = true;
+            string url = "http://haijia.xuechebu.com:8008/KM2/ClYyCars2?filters[xnsd]=" + xnsd + "&filters[xxzh]=" + xxzh + "&filters[yyrq]=" + yyrq + "&xxzh=" + xxzh + "&aaaaa=" + aaaaa + "&os=ios&version=2.5&pageno=1&pagesize=1000";
 
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-                string html = string.Empty;
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    html = reader.ReadToEnd();
-                }
+                string html = HttpRequestHelper.HttpGet(url, "", true);
                 AvaliableCarsInfo info = null;
-                try
+                html = HttpRequestHelper.replaceComma(html);
+                //html = html.Substring(8, html.IndexOf(",\"code\"") - html.IndexOf("\"data\":")-7);
+                info = FromJsonTo<AvaliableCarsInfo>(html);
+                if (info.data.Total == 0)
                 {
-                    html = HttpRequestHelper.replaceComma(html);
-                    //html = html.Substring(8, html.IndexOf(",\"code\"") - html.IndexOf("\"data\":")-7);
-                    info = FromJsonTo<AvaliableCarsInfo>(html);
-                    if (info.data.Total == 0)
+                    printLog("暂无可预约的车辆！", Color.Black);
+                    return;
+                }
+                else
+                {
+                    printLog(yyrq + " " + HttpRequestHelper.getXnsdName(xnsd) + ",系统查询到了" + info.data.Total + " 辆车，小二正在努力抢订中...", Color.OrangeRed);
+                    for (int k = 0; k < info.data.Total; k++)
                     {
-                        printLog("暂无可预约的车辆！",Color.Black);
-                        return;
-                    }
-                    else
-                    {
-                        printLog(yyrq + " " + HttpRequestHelper.getXnsdName(xnsd) + ",系统查询到了" + info.data.Total + " 辆车，小二正在努力抢订中...", Color.OrangeRed);
-                        for (int k = 0; k < info.data.Total; k++)
+                        string cph = info.data.Result[k].CNBH;
+                        //08240.2015-11-14.711..
+                        string result = this.bookCar(cph + "." + yyrq + "." + xnsd + "..");
+                        string xnsdName = HttpRequestHelper.getXnsdName(xnsd);
+                        if (result.IndexOf("error") > -1)
                         {
-                            string cph = info.data.Result[k].CNBH;
-                            //08240.2015-11-14.812..
-                            string result = this.bookCar(cph+"."+yyrq+"."+xnsd+"..");
-                            string xnsdName = HttpRequestHelper.getXnsdName(xnsd);
-                            if (result.IndexOf("error") > -1)
+                            printLog(yyrq + " " + xnsdName + "车牌号为：" + cph + "的车辆，预约失败，失败信息为：" + result, Color.Red);
+                        }
+                        else
+                        {
+                            BookCarResult res = FromJsonTo<BookCarResult>(result);
+                            if (res.code == 0)
                             {
-                                printLog(yyrq + " " + xnsdName + "车牌号为：" + cph + "的车辆，预约失败，失败信息为：" + result, Color.Red);
+                                printLog(yyrq + " " + xnsdName + "车牌号为 " + cph + " 的车辆，预约成功。", Color.Green);
+                                break;
                             }
-                            else 
+                            else
                             {
-                                BookCarResult res = FromJsonTo<BookCarResult>(result);
-                                if (res.code == 0)
+                                if (res.message.Contains("超出小时"))
                                 {
-                                    printLog(yyrq + " " + xnsdName + "车牌号为 " + cph + " 的车辆，预约成功。", Color.Green);
+                                    this.timer1.Enabled = false;
+                                    this.button1.Text = "开始预约";
+                                    printLog("长官，您当前科目预约时间已经满了，可以预约考试了！", Color.Blue);
+                                    break;
+                                }
+                                else if (res.message.Contains("不能约周六日"))
+                                {
+                                    this.timer1.Enabled = false;
+                                    this.button1.Text = "开始预约";
+                                    printLog("很抱歉，您不能预约周六日车辆，可以到驾校更换约车类型...", Color.Red);
+                                    break;
+                                }
+                                else if (res.message.Contains("非预约开放时间"))
+                                {
+                                    printLog("未到预约时间，暂无法预约，系统已进入紧张准备中...", Color.OrangeRed);
                                     break;
                                 }
                                 else
                                 {
-                                    if (res.message.Contains("超出小时"))
-                                    {
-                                        this.timer1.Enabled = false;
-                                        this.button1.Text = "开始预约";
-                                        printLog("长官，您当前科目预约时间已经满了，可以预约考试了！", Color.Blue);
-                                        break;
-                                    }
-                                    else if (res.message.Contains("不能约周六日")) 
-                                    {
-                                        this.timer1.Enabled = false;
-                                        this.button1.Text = "开始预约";
-                                        printLog("很抱歉，您不能预约周六日车辆，可以到驾校更换约车类型...", Color.Red);
-                                        break;
-                                    }
-                                    else if (res.message.Contains("非预约开放时间")) 
-                                    {
-                                        printLog("未到预约时间，暂无法预约，系统已进入紧张准备中...",Color.OrangeRed);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        printLog(yyrq + " " + xnsdName + "车牌号为 " + cph + " 的车辆，预约失败，失败信息为：" + res.message, Color.OrangeRed);
-                                    }
+                                    printLog(yyrq + " " + xnsdName + "车牌号为 " + cph + " 的车辆，预约失败，失败信息为：" + res.message, Color.OrangeRed);
                                 }
                             }
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    printLog(ex.Message, Color.Red);
-                    return;
-                }
-
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
                 printLog(ex.Message, Color.Red);
+                return;
             }
         }
 
         //车辆预约 
         public string bookCar(string param)
         {
-            string getCarListUrl = "http://haijiaapi.bjxueche.net:8008/KM2/ClYyAddByMutil?xxzh="+xxzh+"&os=ios&version=2.5&params="+param+"&isJcsdYyMode=5";
-            //jlcbh:教练车编号是128721511的，并不是车牌号
-            HttpWebRequest request = null;
-            HttpWebResponse response = null;
-            request = (HttpWebRequest)WebRequest.Create(getCarListUrl);
-            request.Credentials = CredentialCache.DefaultCredentials;
-            request.Method = "GET";
-            //request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-            request.UserAgent = "海淀驾校 2.0 rv:150630 (iPhone; iPhone OS 8.3; zh_CN)";
-            request.ContentType = "text/html; charset=utf-8";
-            request.KeepAlive = true;
+            string getCarListUrl = "http://haijia.xuechebu.com:8008/KM2/ClYyAddByMutil?xxzh=" + xxzh + "&aaaaa=" + aaaaa + "&os=ios&version=2.5&params=" + param + "&isJcsdYyMode=5";
             
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-
-                string html = string.Empty;
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    html = reader.ReadToEnd();
-                    reader.Close();
-                }
+                string html = HttpRequestHelper.HttpGet(getCarListUrl,"",true);
+                
                 return html;
             }
             catch (WebException ex)
@@ -677,11 +660,11 @@ namespace BookCarSoft
         {
             try
             {
-                FileStream aFile = new FileStream("C:\\HaiDianJianXiao.txt", FileMode.OpenOrCreate);
+                FileStream aFile = new FileStream("C:\\xuechebu.txt", FileMode.OpenOrCreate);
                 StreamWriter sw = new StreamWriter(aFile);
                 // Write data to file.
                 sw.WriteLine(username);
-                //sw.WriteLine(userpwd);
+                sw.WriteLine(userpwd);
                 sw.Write("##以上信息主要为了保存您当前约车软件的账号，方便下次登录，您也可以自行删除##");
                 sw.Flush();
                 sw.Close();
@@ -734,7 +717,7 @@ namespace BookCarSoft
             cphList2.Clear();
             cphList3.Clear();
             timerIndex = -1;//初始化变量
-            DateTime yyDate = Convert.ToDateTime(grabYyrq + " 07:34:50");
+            DateTime yyDate = Convert.ToDateTime(grabYyrq + " 07:35:00");
             yyDate = yyDate.AddDays(-7);//往前推7天
             if (this.btnGrabCar.Text.Equals("开始抢车"))
             {
@@ -753,9 +736,9 @@ namespace BookCarSoft
                 }
                 else 
                 {
-                    this.getGrabCars(grabYyrq, "812",true);
-                    this.getGrabCars(grabYyrq, "15", true);
-                    this.getGrabCars(grabYyrq, "58", true);
+                    this.getGrabCars(grabYyrq, "711",true);
+                    this.getGrabCars(grabYyrq, "1216", true);
+                    this.getGrabCars(grabYyrq, "1720", true);
                     if (this.cphList1.Count == 0 && cphList2.Count == 0 && cphList3.Count == 0)
                     {
                         //如果时间到了，停止计时器
@@ -785,12 +768,11 @@ namespace BookCarSoft
 
         private void timerGrab_Tick(object sender, EventArgs e)
         {
-            long curSecond = DateTime.Now.Ticks;
+            long curSecond = serverTime.Ticks; 
             //定时
-            DateTime needDate = Convert.ToDateTime(grabYyrq + " 07:34:50");
+            DateTime needDate = Convert.ToDateTime(grabYyrq + " 07:35:00");
             needDate = needDate.AddDays(-7);//往前推7天
             long realNeedSecond = needDate.Ticks;
-            this.lblCurrentDate.Text = DateTime.Now.ToLocalTime().ToString();
             if (curSecond - realNeedSecond >= 0)
             {
                 timerIndex++;
@@ -846,7 +828,7 @@ namespace BookCarSoft
                         }
                         else
                         {
-                            printLog(yyrq + " " + xnsdName + "车牌号为 " + cph + " 的车辆，预约失败，失败信息为：" + res.message, Color.OrangeRed);
+                            printLog(yyrq + " " + xnsdName + "车牌号为 " + cph + " 的车辆，预约失败，失败信息为：" + res.message, Color.Red);
                         }
                     }
                 }
@@ -889,31 +871,17 @@ namespace BookCarSoft
         //获取指定日期下可预约的车辆数目
         public void getGrabCars(string yyrq, string xnsd,bool isThread)
         {
-            string url = "http://haijiaapi.bjxueche.net:8008/KM2/ClYyCars2?filters[xnsd]=" + xnsd + "&filters[xxzh]=" + xxzh + "&filters[yyrq]=" + yyrq + "&xxzh=" + xxzh + "&os=ios&version=2.5&pageno=1&pagesize=1000";
-            HttpWebRequest request = null;
-            HttpWebResponse response = null;
-            request = (HttpWebRequest)WebRequest.Create(url);
-            request.Credentials = CredentialCache.DefaultCredentials;
-            request.Method = "GET";
-            //request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-            request.UserAgent = "海淀驾校 2.0 rv:150630 (iPhone; iPhone OS 8.3; zh_CN)";
-            request.ContentType = "text/html; charset=utf-8";
-            request.KeepAlive = true;
-
+            string url = "http://haijia.xuechebu.com:8008/KM2/ClYyCars2?filters[xnsd]=" + xnsd + "&filters[xxzh]=" + xxzh + "&filters[yyrq]=" + yyrq + "&xxzh=" + xxzh + "&os=ios&version=2.5&pageno=1&pagesize=1000";
             try
             {
-                response = (HttpWebResponse)request.GetResponse();
-                string html = string.Empty;
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    html = reader.ReadToEnd();
-                }
+                string html = HttpRequestHelper.HttpGet(url, "", true);
+                
                 AvaliableCarsInfo info = null;
                 try
                 {
                     html = HttpRequestHelper.replaceComma(html);
                     //html = html.Substring(8, html.IndexOf(",\"code\"") - html.IndexOf("\"data\":")-7);
-                    info = FromJsonTo<AvaliableCarsInfo>(html);
+                    info = FromJsonTo<AvaliableCarsInfo>(html);//{"data":null,"code":110,"message":"身份认证失败,请重新登录"}
                     if (info.data.Total == 0)
                     {
                         printLog(yyrq+HttpRequestHelper.getXnsdName(xnsd)+" 没有可预约车辆，请开启检漏模式！", Color.Black);
@@ -931,15 +899,15 @@ namespace BookCarSoft
                             }
                             else 
                             {
-                                if (xnsd.Equals("812")) 
+                                if (xnsd.Equals("711")) 
                                 {
                                     cphList1.Add(cph);
                                 }
-                                if (xnsd.Equals("15"))
+                                if (xnsd.Equals("1216"))
                                 {
                                     cphList2.Add(cph);
                                 }
-                                if (xnsd.Equals("58"))
+                                if (xnsd.Equals("1720"))
                                 {
                                     cphList3.Add(cph);
                                 }
@@ -972,7 +940,7 @@ namespace BookCarSoft
                     lock (locker)
                     {
                         string cph = cphList1[i];
-                        string resultHtml = this.bookCar(cph + "." + grabYyrq + ".812..");
+                        string resultHtml = this.bookCar(cph + "." + grabYyrq + ".711..");
                         string xnsdName = HttpRequestHelper.getXnsdName(grabXnsd);
                         if (resultHtml.IndexOf("error") > -1)
                         {
@@ -1030,7 +998,7 @@ namespace BookCarSoft
                     lock (locker)
                     {
                         string cph = cphList2[i];
-                        string resultHtml = this.bookCar(cph + "." + grabYyrq + ".812..");
+                        string resultHtml = this.bookCar(cph + "." + grabYyrq + ".711..");
                         string xnsdName = HttpRequestHelper.getXnsdName(grabXnsd);
                         if (resultHtml.IndexOf("error") > -1)
                         {
@@ -1088,7 +1056,7 @@ namespace BookCarSoft
                     lock (locker)
                     {
                         string cph = cphList3[i];
-                        string resultHtml = this.bookCar(cph + "." + grabYyrq + ".812..");
+                        string resultHtml = this.bookCar(cph + "." + grabYyrq + ".711..");
                         string xnsdName = HttpRequestHelper.getXnsdName(grabXnsd);
                         if (resultHtml.IndexOf("error") > -1)
                         {
@@ -1142,6 +1110,52 @@ namespace BookCarSoft
             if (t3 != null && t3.IsAlive == true) { t3.Abort(); }
         }
 
+        // 时间戳转为C#格式时间
+        private DateTime StampToDateTime(string timeStamp)
+        {
+            DateTime dateTimeStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            long lTime = long.Parse(timeStamp + "0000000");
+            TimeSpan toNow = new TimeSpan(lTime);
+
+            return dateTimeStart.Add(toNow);
+        }
+
+        private void timerServer_Tick(object sender, EventArgs e)
+        {
+            serverTime = serverTime.AddSeconds(1);
+            lblServerTime.Text = serverTime.ToLongTimeString().ToString();
+        }
+
+        //修改电脑ip
+        private void SetNetworkAdapter()
+        {
+            ManagementBaseObject inPar = null;
+            ManagementBaseObject outPar = null;
+            ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            ManagementObjectCollection moc = mc.GetInstances();
+            foreach (ManagementObject mo in moc)
+            {
+                if (!(bool)mo["IPEnabled"])
+                    continue;
+
+                //设置ip地址和子网掩码
+                inPar = mo.GetMethodParameters("EnableStatic");
+                inPar["IPAddress"] = new string[] { "192.168.1.3", "192.168.1.4" };// 1.备用 2.IP
+                inPar["SubnetMask"] = new string[] { "255.255.255.0", "255.255.255.0" };
+                outPar = mo.InvokeMethod("EnableStatic", inPar, null);
+
+                //设置网关地址
+                inPar = mo.GetMethodParameters("SetGateways");
+                inPar["DefaultIPGateway"] = new string[] { "192.168.1.1"};// 1.网关;2.备用网关
+                outPar = mo.InvokeMethod("SetGateways", inPar, null);
+
+                //设置DNS
+                //inPar = mo.GetMethodParameters("SetDNSServerSearchOrder");
+                //inPar["DNSServerSearchOrder"] = new string[] { "211.97.168.129", "202.102.152.3" };// 1.DNS 2.备用DNS
+                //outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
+                break;
+            }
+        }
         
     }
 }
