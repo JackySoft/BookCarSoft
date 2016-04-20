@@ -41,6 +41,7 @@ namespace BookCarSoft
         public List<Label> list_1 = null;
         public List<Label> list_2 = null;
         public List<Label> list_3 = null;
+        public string strIP, strSubnet, strGateway, strDNS;
         public bool loginSuccFlag = false;
         public DateTime serverTime;
         public string aaaaa = "QzDmLcq7KgPO9VhTLukNWlLGtsIpd9PH2TPQjJnh4Pp4FuDbHME5u9fUK3CS3ZO9b93KvUCXk-add-dxuTpxi1ostYaPkUZ41yzcJcde1xpPepyhvn5DhiFcFnwwQU5-add-QFDFpFnvVCjvypzQ9WFQzCnluEFxw2VZl7H4ejkiEg2fPl8=";
@@ -174,8 +175,6 @@ namespace BookCarSoft
                     lblServerTime.Text = serverTime.ToLongTimeString().ToString();
                     this.timerServer.Enabled = true;
                 }
-
-                SetNetworkAdapter();
                 Control.CheckForIllegalCrossThreadCalls = false;
                 FileStream aFile = new FileStream("C:\\xuechebu.txt", FileMode.OpenOrCreate);
                 StreamReader sr = new StreamReader(aFile);
@@ -636,6 +635,15 @@ namespace BookCarSoft
         private void logPrint_TextChanged(object sender, EventArgs e)
         {
             this.logPrint.ScrollToCaret();
+        }
+
+        //打印日志
+        public void printLog(string logStr)
+        {
+            string datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            this.logPrint.SelectionColor = Color.Black;
+            this.logPrint.AppendText(datetime.Split(' ')[1] + " " + logStr + "\r\n");
+            this.logPrint.Focus();
         }
 
         //打印日志
@@ -1126,13 +1134,77 @@ namespace BookCarSoft
             lblServerTime.Text = serverTime.ToLongTimeString().ToString();
         }
 
+        public void GetIPAndDNS()
+        {
+            strIP = "0.0.0.0";
+            strSubnet = "0.0.0.0";
+            strGateway = "0.0.0.0";
+            strDNS = "0.0.0.0";
+            try
+            {
+                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+                ManagementObjectCollection nics = mc.GetInstances();
+                foreach (ManagementObject nic in nics)
+                {
+                    try
+                    {
+                        if (Convert.ToBoolean(nic["IPEnabled"]) == true)
+                        {
+
+                            if ((nic["IPAddress"] as String[]).Length > 0 && strIP == "0.0.0.0")
+                            {
+                                strIP = (nic["IPAddress"] as String[])[0];
+                            }
+                            if ((nic["IPSubnet"] as String[]).Length > 0 && strSubnet == "0.0.0.0")
+                            {
+                                strSubnet = (nic["IPSubnet"] as String[])[0];
+                            }
+                            if ((nic["DefaultIPGateway"] as String[]).Length > 0 && strGateway == "0.0.0.0")
+                            {
+                                strGateway = (nic["DefaultIPGateway"] as String[])[0];
+                            }
+                            if ((nic["DNSServerSearchOrder"] as String[]).Length > 0 && strDNS == "0.0.0.0")
+                            {
+                                strDNS = (nic["DNSServerSearchOrder"] as String[])[0];
+                            }
+
+                            printLog("本机IP:" + strIP,Color.Orange);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        //查询本机IP
+        private void queryIp_Click(object sender, EventArgs e)
+        {
+
+            GetIPAndDNS();
+
+        }
+
         //修改电脑ip
-        private void SetNetworkAdapter()
+        private void SetNetworkAdapter(string ip)
         {
             ManagementBaseObject inPar = null;
             ManagementBaseObject outPar = null;
             ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            string newIp = "";
             ManagementObjectCollection moc = mc.GetInstances();
+            if ("".Equals(strIP))
+            {
+                return;
+            }
+            else 
+            {
+                newIp = strIP.Split('.')[0] + "." + strIP.Split('.')[1] + "." + strIP.Split('.')[2] + "." + ip;
+            }   
             foreach (ManagementObject mo in moc)
             {
                 if (!(bool)mo["IPEnabled"])
@@ -1140,21 +1212,29 @@ namespace BookCarSoft
 
                 //设置ip地址和子网掩码
                 inPar = mo.GetMethodParameters("EnableStatic");
-                inPar["IPAddress"] = new string[] { "192.168.1.3", "192.168.1.4" };// 1.备用 2.IP
-                inPar["SubnetMask"] = new string[] { "255.255.255.0", "255.255.255.0" };
+
+                inPar["IPAddress"] = new string[] { newIp };// 1.备用 2.IP
+                inPar["SubnetMask"] = new string[] { strSubnet };
                 outPar = mo.InvokeMethod("EnableStatic", inPar, null);
 
                 //设置网关地址
                 inPar = mo.GetMethodParameters("SetGateways");
-                inPar["DefaultIPGateway"] = new string[] { "192.168.1.1"};// 1.网关;2.备用网关
+                inPar["DefaultIPGateway"] = new string[] { strGateway };// 1.网关;2.备用网关
                 outPar = mo.InvokeMethod("SetGateways", inPar, null);
 
                 //设置DNS
-                //inPar = mo.GetMethodParameters("SetDNSServerSearchOrder");
-                //inPar["DNSServerSearchOrder"] = new string[] { "211.97.168.129", "202.102.152.3" };// 1.DNS 2.备用DNS
-                //outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
+                inPar = mo.GetMethodParameters("SetDNSServerSearchOrder");
+                inPar["DNSServerSearchOrder"] = new string[] { strDNS };// 1.DNS 2.备用DNS
+                outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
                 break;
             }
+        }
+
+        private void btnUpdateIp_Click(object sender, EventArgs e)
+        {
+            Random ran = new Random();
+            int RandKey = ran.Next(1, 255);
+            SetNetworkAdapter(RandKey.ToString());
         }
         
     }
