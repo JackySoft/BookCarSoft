@@ -1228,6 +1228,7 @@ namespace BookCarSoft
                 outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
                 break;
             }
+            printLog("修改后的IP为："+newIp+",如果此IP与其他人冲突，则从新获取即可。");
         }
 
         private void btnUpdateIp_Click(object sender, EventArgs e)
