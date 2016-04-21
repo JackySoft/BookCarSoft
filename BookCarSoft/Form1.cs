@@ -175,7 +175,7 @@ namespace BookCarSoft
                     this.timerServer.Enabled = true;
                 }
 
-                SetNetworkAdapter();
+                //SetNetworkAdapter();
                 Control.CheckForIllegalCrossThreadCalls = false;
                 FileStream aFile = new FileStream("C:\\xuechebu.txt", FileMode.OpenOrCreate);
                 StreamReader sr = new StreamReader(aFile);

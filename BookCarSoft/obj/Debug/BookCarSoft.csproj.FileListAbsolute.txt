@@ -22,3 +22,15 @@ E:\workspace\C#\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.exe.manifest
 E:\workspace\C#\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.application
 E:\workspace\C#\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.exe
 E:\workspace\C#\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.pdb
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\ResolveAssemblyReference.cache
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.Form1.resources
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.Properties.Resources.resources
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.csproj.GenerateResource.Cache
+F:\C#_Project\BookCarSoft\BookCarSoft\bin\Debug\BookCarSoft.exe.manifest
+F:\C#_Project\BookCarSoft\BookCarSoft\bin\Debug\BookCarSoft.application
+F:\C#_Project\BookCarSoft\BookCarSoft\bin\Debug\BookCarSoft.exe
+F:\C#_Project\BookCarSoft\BookCarSoft\bin\Debug\BookCarSoft.pdb
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.exe.manifest
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.application
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.exe
+F:\C#_Project\BookCarSoft\BookCarSoft\obj\Debug\BookCarSoft.pdb
