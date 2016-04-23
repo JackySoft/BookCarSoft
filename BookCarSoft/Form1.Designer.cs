@@ -78,7 +78,7 @@
             this.logPrint = new System.Windows.Forms.RichTextBox();
             this.lblCurrentDate = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tap = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label3 = new System.Windows.Forms.Label();
             this.txtRefreshTime = new System.Windows.Forms.TextBox();
@@ -92,6 +92,9 @@
             this.btnGrabCar = new System.Windows.Forms.Button();
             this.dtGrabDate = new System.Windows.Forms.DateTimePicker();
             this.label6 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnUpdateIp = new System.Windows.Forms.Button();
+            this.queryIp = new System.Windows.Forms.Button();
             this.timerGrab = new System.Windows.Forms.Timer(this.components);
             this.startThread = new System.Windows.Forms.Timer(this.components);
             this.lblServerTime = new System.Windows.Forms.Label();
@@ -99,9 +102,10 @@
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.tap.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -716,15 +720,16 @@
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
             // 
-            // tabControl1
+            // tap
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(12, 148);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(335, 117);
-            this.tabControl1.TabIndex = 22;
+            this.tap.Controls.Add(this.tabPage1);
+            this.tap.Controls.Add(this.tabPage2);
+            this.tap.Controls.Add(this.tabPage3);
+            this.tap.Location = new System.Drawing.Point(12, 148);
+            this.tap.Name = "tap";
+            this.tap.SelectedIndex = 0;
+            this.tap.Size = new System.Drawing.Size(335, 117);
+            this.tap.TabIndex = 22;
             // 
             // tabPage1
             // 
@@ -870,6 +875,38 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "预约时间：";
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.btnUpdateIp);
+            this.tabPage3.Controls.Add(this.queryIp);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(327, 91);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "动态修改Ip";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // btnUpdateIp
+            // 
+            this.btnUpdateIp.Location = new System.Drawing.Point(177, 24);
+            this.btnUpdateIp.Name = "btnUpdateIp";
+            this.btnUpdateIp.Size = new System.Drawing.Size(111, 46);
+            this.btnUpdateIp.TabIndex = 1;
+            this.btnUpdateIp.Text = "随机修改IP";
+            this.btnUpdateIp.UseVisualStyleBackColor = true;
+            this.btnUpdateIp.Click += new System.EventHandler(this.btnUpdateIp_Click);
+            // 
+            // queryIp
+            // 
+            this.queryIp.Location = new System.Drawing.Point(28, 24);
+            this.queryIp.Name = "queryIp";
+            this.queryIp.Size = new System.Drawing.Size(111, 46);
+            this.queryIp.TabIndex = 0;
+            this.queryIp.Text = "查询本机IP";
+            this.queryIp.UseVisualStyleBackColor = true;
+            this.queryIp.Click += new System.EventHandler(this.queryIp_Click);
+            // 
             // timerGrab
             // 
             this.timerGrab.Interval = 500;
@@ -901,7 +938,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 495);
             this.Controls.Add(this.lblServerTime);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tap);
             this.Controls.Add(this.lblCurrentDate);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -921,11 +958,12 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
+            this.tap.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -981,7 +1019,7 @@
         private System.Windows.Forms.Label lbl_1_8;
         private System.Windows.Forms.Label lbl_7;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tap;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label label3;
@@ -999,6 +1037,9 @@
         private System.Windows.Forms.Timer startThread;
         private System.Windows.Forms.Label lblServerTime;
         private System.Windows.Forms.Timer timerServer;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button queryIp;
+        private System.Windows.Forms.Button btnUpdateIp;
     }
 }
 

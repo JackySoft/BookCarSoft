@@ -7,6 +7,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "终结者管理员版", "C:
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "海驾终结者", "C:\Users\Administrator\Desktop\约车神器\海驾约车软件\海驾终结者\海驾终结者\海驾终结者.vdproj", "{AAE91A74-C70C-495A-8814-093B7D015560}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AutoQueryCar", "C:\Users\Administrator\Desktop\AutoQueryCar\AutoQueryCar.vdproj", "{1FCC7345-60C6-40F0-923C-D9E7C36C8044}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,8 @@ Global
 		{35F2BCAA-1D60-4B40-A26B-D9E72AEF7E12}.Release|Any CPU.ActiveCfg = Release
 		{AAE91A74-C70C-495A-8814-093B7D015560}.Debug|Any CPU.ActiveCfg = Debug
 		{AAE91A74-C70C-495A-8814-093B7D015560}.Release|Any CPU.ActiveCfg = Release
+		{1FCC7345-60C6-40F0-923C-D9E7C36C8044}.Debug|Any CPU.ActiveCfg = Debug
+		{1FCC7345-60C6-40F0-923C-D9E7C36C8044}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
