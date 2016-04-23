@@ -43,6 +43,8 @@ namespace BookCarSoft
         public List<Label> list_3 = null;
         public bool loginSuccFlag = false;
         public DateTime serverTime;
+        public string strIP, strSubnet, strGateway, strDNS;
+        public bool isQuick = false;
         public string aaaaa = "QzDmLcq7KgPO9VhTLukNWlLGtsIpd9PH2TPQjJnh4Pp4FuDbHME5u9fUK3CS3ZO9b93KvUCXk-add-dxuTpxi1ostYaPkUZ41yzcJcde1xpPepyhvn5DhiFcFnwwQU5-add-QFDFpFnvVCjvypzQ9WFQzCnluEFxw2VZl7H4ejkiEg2fPl8=";
         //07:45--11:30	12:45--16:30	17:00--20:00
         private void btnAboutCar_Click(object sender, EventArgs e)
@@ -303,48 +305,57 @@ namespace BookCarSoft
         //定时查询预约车辆
         private void timer1_Tick(object sender, EventArgs e)
         {
-            bool isHasCars = false;
-            //获取当前可预约车辆所对应的日期列表
-            this.getAllCarsCount(false);
-            //如果用户的预约列表数量大于0，才可进行预约，否则，停止约车
-            if (this.dateList.Count > 0)
+            if (isQuick)
             {
-                if (this.avaDateList.Count > 0)
+                isQuick = false;
+                //Thread.Sleep(3000 * 60);
+                button1_Click(sender, e);//暂停捡漏
+            }
+            else 
+            {
+                bool isHasCars = false;
+                //获取当前可预约车辆所对应的日期列表
+                this.getAllCarsCount(false);
+                //如果用户的预约列表数量大于0，才可进行预约，否则，停止约车
+                if (this.dateList.Count > 0)
                 {
-                    //循环判断，如果用户勾选的日期包含当前日期，并且又可以预约，则进行预约
-                    for (int i = 0; i < dateList.Count; i++)
+                    if (this.avaDateList.Count > 0)
                     {
-                        //循环可预约的日期列表，判断是否有用户勾选过的
-                        for (int j = 0; j < avaDateList.Count; j++)
+                        //循环判断，如果用户勾选的日期包含当前日期，并且又可以预约，则进行预约
+                        for (int i = 0; i < dateList.Count; i++)
                         {
-                            //printLog(avaDateList[j] + "  用户勾选的：" + dateList[i]);
-                            if (dateList[i].Equals(avaDateList[j]))
+                            //循环可预约的日期列表，判断是否有用户勾选过的
+                            for (int j = 0; j < avaDateList.Count; j++)
                             {
-                                string rq = dateList[i].Split('.')[0];
-                                string sd = dateList[i].Split('.')[1];
-                                //printLog(rq + " " + sd + " 是你所需要的 。 ");
-                                //发现有相同的日期和时段后，进行查询车辆，并循环预订
-                                getAvaliableCars(rq, sd);
-                                isHasCars = true;
-                                break;//一次循环只可能存在一个相同的日期和时段
+                                //printLog(avaDateList[j] + "  用户勾选的：" + dateList[i]);
+                                if (dateList[i].Equals(avaDateList[j]))
+                                {
+                                    string rq = dateList[i].Split('.')[0];
+                                    string sd = dateList[i].Split('.')[1];
+                                    //printLog(rq + " " + sd + " 是你所需要的 。 ");
+                                    //发现有相同的日期和时段后，进行查询车辆，并循环预订
+                                    getAvaliableCars(rq, sd);
+                                    isHasCars = true;
+                                    break;//一次循环只可能存在一个相同的日期和时段
+                                }
                             }
                         }
+                        if (isHasCars == false)
+                        {
+                            printLog("目前系统查询到的车辆与您期望的不匹配，继续检漏中...", Color.Blue);
+                        }
                     }
-                    if (isHasCars == false)
+                    else
                     {
-                        printLog("目前系统查询到的车辆与您期望的不匹配，继续检漏中...", Color.Blue);
+                        printLog("当前暂时没有可预约的车辆，小二正努力检漏中...", Color.Black);
                     }
                 }
                 else
                 {
-                    printLog("当前暂时没有可预约的车辆，小二正努力检漏中...", Color.Black);
+                    this.timer1.Enabled = false;
+                    printLog("长官，没有需要预约的车辆了，您哪天有时间练车，快快点击预约吧.", Color.Black);
+                    this.button1.Text = "开始预约";
                 }
-            }
-            else 
-            {
-                this.timer1.Enabled = false;
-                printLog("长官，没有需要预约的车辆了，您哪天有时间练车，快快点击预约吧.",Color.Black);
-                this.button1.Text = "开始预约";
             }
             
         }
@@ -365,9 +376,14 @@ namespace BookCarSoft
                     info = FromJsonTo<MessageInfo>(html);
                     if (info.data == null)
                     {
+                        if (info.message.Equals("访问太过频繁,请稍后再试！"))
+                        {
+                            isQuick = true;
+                        }
                         printLog(info.message, Color.Red);
                         return;
                     }
+                    isQuick = false;
                     //循环加载最新的约车日期
                     List<CarItem> list = info.data.UIDatas;
                     if (list != null)
@@ -652,6 +668,15 @@ namespace BookCarSoft
             }
             
             this.logPrint.AppendText(datetime.Split(' ')[1]+" "+logStr + "\r\n");
+            this.logPrint.Focus();
+        }
+
+        //打印日志
+        public void printLog(string logStr)
+        {
+            string datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            this.logPrint.SelectionColor = Color.Black;
+            this.logPrint.AppendText(datetime.Split(' ')[1] + " " + logStr + "\r\n");
             this.logPrint.Focus();
         }
 
@@ -1126,13 +1151,69 @@ namespace BookCarSoft
             lblServerTime.Text = serverTime.ToLongTimeString().ToString();
         }
 
+        public void GetIPAndDNS()
+        {
+            strIP = "0.0.0.0";
+            strSubnet = "0.0.0.0";
+            strGateway = "0.0.0.0";
+            strDNS = "0.0.0.0";
+            try
+            {
+                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+                ManagementObjectCollection nics = mc.GetInstances();
+                foreach (ManagementObject nic in nics)
+                {
+                    try
+                    {
+                        if (Convert.ToBoolean(nic["IPEnabled"]) == true)
+                        {
+
+                            if ((nic["IPAddress"] as String[]).Length > 0 && strIP == "0.0.0.0")
+                            {
+                                strIP = (nic["IPAddress"] as String[])[0];
+                            }
+                            if ((nic["IPSubnet"] as String[]).Length > 0 && strSubnet == "0.0.0.0")
+                            {
+                                strSubnet = (nic["IPSubnet"] as String[])[0];
+                            }
+                            if ((nic["DefaultIPGateway"] as String[]).Length > 0 && strGateway == "0.0.0.0")
+                            {
+                                strGateway = (nic["DefaultIPGateway"] as String[])[0];
+                            }
+                            if ((nic["DNSServerSearchOrder"] as String[]).Length > 0 && strDNS == "0.0.0.0")
+                            {
+                                strDNS = (nic["DNSServerSearchOrder"] as String[])[0];
+                            }
+
+                            printLog("本机IP:" + strIP, Color.Orange);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         //修改电脑ip
-        private void SetNetworkAdapter()
+        private void SetNetworkAdapter(string ip)
         {
             ManagementBaseObject inPar = null;
             ManagementBaseObject outPar = null;
             ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            string newIp = "";
             ManagementObjectCollection moc = mc.GetInstances();
+            if ("".Equals(strIP))
+            {
+                return;
+            }
+            else
+            {
+                newIp = strIP.Split('.')[0] + "." + strIP.Split('.')[1] + "." + strIP.Split('.')[2] + "." + ip;
+            }
             foreach (ManagementObject mo in moc)
             {
                 if (!(bool)mo["IPEnabled"])
@@ -1140,21 +1221,42 @@ namespace BookCarSoft
 
                 //设置ip地址和子网掩码
                 inPar = mo.GetMethodParameters("EnableStatic");
-                inPar["IPAddress"] = new string[] { "192.168.1.3", "192.168.1.4" };// 1.备用 2.IP
-                inPar["SubnetMask"] = new string[] { "255.255.255.0", "255.255.255.0" };
+
+                inPar["IPAddress"] = new string[] { newIp };// 1.备用 2.IP
+                inPar["SubnetMask"] = new string[] { strSubnet };
                 outPar = mo.InvokeMethod("EnableStatic", inPar, null);
 
                 //设置网关地址
                 inPar = mo.GetMethodParameters("SetGateways");
-                inPar["DefaultIPGateway"] = new string[] { "192.168.1.1"};// 1.网关;2.备用网关
+                inPar["DefaultIPGateway"] = new string[] { strGateway };// 1.网关;2.备用网关
                 outPar = mo.InvokeMethod("SetGateways", inPar, null);
 
                 //设置DNS
-                //inPar = mo.GetMethodParameters("SetDNSServerSearchOrder");
-                //inPar["DNSServerSearchOrder"] = new string[] { "211.97.168.129", "202.102.152.3" };// 1.DNS 2.备用DNS
-                //outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
+                inPar = mo.GetMethodParameters("SetDNSServerSearchOrder");
+                inPar["DNSServerSearchOrder"] = new string[] { strDNS };// 1.DNS 2.备用DNS
+                outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
                 break;
             }
+            printLog("修改后的IP为：" + newIp + ",如果此IP与其他人冲突，则从新获取即可。");
+        }
+
+
+
+        private void btnUpdateIp_Click(object sender, EventArgs e)
+        {
+            Random ran = new Random();
+            int RandKey = ran.Next(1, 255);
+            if ("".Equals(strIP)) 
+            {
+                GetIPAndDNS();
+            }
+            SetNetworkAdapter(RandKey.ToString());
+
+        }
+
+        private void queryIp_Click(object sender, EventArgs e)
+        {
+            GetIPAndDNS();
         }
         
     }
