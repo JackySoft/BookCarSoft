@@ -141,7 +141,15 @@ namespace BookCarSoft
                 string currentDate = "";
                 for (int i = 0; i < lblList.Count; i++)
                 {
-                    currentDate = d1.Year + "-" + d1.Month + "-";
+                    currentDate = d1.Year + "-";
+                    if (d1.Month > 9)
+                    {
+                        currentDate += d1.Month + "-";
+                    }
+                    else
+                    {
+                        currentDate += "0" + d1.Month + "-";
+                    }
                     if (d1.Day > 9)
                     {
                         currentDate += d1.Day;
@@ -1246,7 +1254,7 @@ namespace BookCarSoft
         {
             Random ran = new Random();
             int RandKey = ran.Next(1, 255);
-            if ("".Equals(strIP)) 
+            if (strIP==null || "".Equals(strIP)) 
             {
                 GetIPAndDNS();
             }

@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookCarSoft", "BookCarSoft\
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AutoQueryCar", "C:\Users\Administrator\Desktop\AutoQueryCar\AutoQueryCar.vdproj", "{1FCC7345-60C6-40F0-923C-D9E7C36C8044}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AutoQyueryCar", "AutoQyueryCar\AutoQyueryCar.vdproj", "{7ABA86D5-A1B3-4C92-8C6B-1D9978251B34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,8 @@ Global
 		{16B1B965-5532-44E2-9E2D-7F772E3852F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1FCC7345-60C6-40F0-923C-D9E7C36C8044}.Debug|Any CPU.ActiveCfg = Debug
 		{1FCC7345-60C6-40F0-923C-D9E7C36C8044}.Release|Any CPU.ActiveCfg = Release
+		{7ABA86D5-A1B3-4C92-8C6B-1D9978251B34}.Debug|Any CPU.ActiveCfg = Debug
+		{7ABA86D5-A1B3-4C92-8C6B-1D9978251B34}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
